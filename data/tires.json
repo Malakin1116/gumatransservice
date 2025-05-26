@@ -1,0 +1,840 @@
+[
+    {
+      "size": "215/75R17.5",
+      "brand": "Windforce",
+      "model": "wd2020",
+      "axle": "ВЕДУЧА",
+      "price": 5800,
+      "country": "Китай"
+    },
+    {
+      "size": "215/75R17.5",
+      "brand": "Windforce",
+      "model": "wh1020",
+      "axle": "КЕРМО",
+      "price": null,
+      "country": "Китай"
+    },
+    {
+      "size": "215/75R17.5",
+      "brand": "SPORTRAK",
+      "model": "SP302",
+      "axle": "КЕРМО",
+      "price": null,
+      "country": "Китай"
+    },
+    {
+      "size": "215/75R17.5",
+      "brand": "SPORTRAK",
+      "model": "SP305",
+      "axle": "ВЕДУЧА",
+      "price": 5400,
+      "country": "Китай"
+    },
+    {
+      "size": "215/75R17.5",
+      "brand": "Greentrac",
+      "model": "GTRА1",
+      "axle": "УНІВ.",
+      "price": 6800,
+      "country": "Тайланд"
+    },
+    {
+      "size": "215/75R17.5",
+      "brand": "Neoterra",
+      "model": "nt166",
+      "axle": "УНІВ.",
+      "price": null,
+      "country": "Китай"
+    },
+    {
+      "size": "215/75R17.5",
+      "brand": "Apollo",
+      "model": "RA",
+      "axle": "КЕРМО",
+      "price": 7800,
+      "country": "Угорщина"
+    },
+    {
+      "size": "215/75R17.5",
+      "brand": "Apollo",
+      "model": "RD",
+      "axle": "ВЕДУЧА",
+      "price": 7900,
+      "country": "Угорщина"
+    },
+    {
+      "size": "225/75R17.5",
+      "brand": "Apollo",
+      "model": "RD",
+      "axle": "ВЕДУЧА",
+      "price": 7900,
+      "country": "Угорщина"
+    },
+    {
+      "size": "225/75R17.5",
+      "brand": "Apollo",
+      "model": "RA",
+      "axle": "КЕРМО",
+      "price": 7900,
+      "country": "Угорщина"
+    },
+    {
+      "size": "235/75R17.5",
+      "brand": "SPORTRAK",
+      "model": "SP302",
+      "axle": "КЕРМО",
+      "price": 5900,
+      "country": "Китай"
+    },
+    {
+      "size": "235/75R17.5",
+      "brand": "SPORTRAK",
+      "model": "SP305",
+      "axle": "ВЕДУЧА",
+      "price": 5900,
+      "country": "Китай"
+    },
+    {
+      "size": "235/75R17.5",
+      "brand": "Apollo",
+      "model": "RТ",
+      "axle": "ПРИЧІП",
+      "price": 10000,
+      "country": "Угорщина"
+    },
+    {
+      "size": "235/75R17.5",
+      "brand": "Apollo",
+      "model": "RА",
+      "axle": "КЕРМО",
+      "price": 9300,
+      "country": "Угорщина"
+    },
+    {
+      "size": "235/75R17.5",
+      "brand": "Apollo",
+      "model": "RD",
+      "axle": "ВЕДУЧА",
+      "price": 9300,
+      "country": "Угорщина"
+    },
+    {
+      "size": "235/75R17.5",
+      "brand": "Neoterra",
+      "model": "nt166",
+      "axle": "УНІВ.",
+      "price": null,
+      "country": "Китай"
+    },
+    {
+      "size": "235/75R17.5",
+      "brand": "Windforce",
+      "model": "wh1020",
+      "axle": "КЕРМО",
+      "price": 5800,
+      "country": "Китай"
+    },
+    {
+      "size": "235/75R17.5",
+      "brand": "Windforce",
+      "model": "wt3000",
+      "axle": "ПРИЧІП",
+      "price": 6300,
+      "country": "Китай"
+    },
+    {
+      "size": "235/75R17.5",
+      "brand": "Windforce",
+      "model": "wd2020",
+      "axle": "ВЕДУЧА",
+      "price": 5900,
+      "country": "Китай"
+    },
+    {
+      "size": "285/70R19.5",
+      "brand": "Neoterra",
+      "model": "NT299",
+      "axle": "ВЕДУЧА",
+      "price": null,
+      "country": "Китай"
+    },
+    {
+      "size": "285/70R19.5",
+      "brand": "Neoterra",
+      "model": "nt166",
+      "axle": "УНІВ.",
+      "price": null,
+      "country": "Китай"
+    },
+    {
+      "size": "295/80R22.5",
+      "brand": "Windforce",
+      "model": "wh1000",
+      "axle": "КЕРМО",
+      "price": 9200,
+      "country": "Китай"
+    },
+    {
+      "size": "295/80R22.5",
+      "brand": "Windforce",
+      "model": "wh1020",
+      "axle": "КЕРМО",
+      "price": null,
+      "country": "Китай"
+    },
+    {
+      "size": "295/80R22.5",
+      "brand": "Neoterra",
+      "model": "NT366",
+      "axle": "КЕРМО",
+      "price": 10400,
+      "country": "Китай"
+    },
+    {
+      "size": "295/80R22.5",
+      "brand": "Neoterra",
+      "model": "NT599",
+      "axle": "ВЕДУЧА",
+      "price": 10700,
+      "country": "Китай"
+    },
+    {
+      "size": "295/80R22.5",
+      "brand": "Tracmax",
+      "model": "GRT880",
+      "axle": "ВЕДУЧА",
+      "price": 9700,
+      "country": "Китай"
+    },
+    {
+      "size": "295/80R22.5",
+      "brand": "Tracmax",
+      "model": "GRT800",
+      "axle": "КЕРМО",
+      "price": 9400,
+      "country": "Китай"
+    },
+    {
+      "size": "295/80R22.5",
+      "brand": "Windforce",
+      "model": "wd2020",
+      "axle": "ВЕДУЧА",
+      "price": 9800,
+      "country": "Китай"
+    },
+    {
+      "size": "295/80R22.5",
+      "brand": "Apollo",
+      "model": "RD 2",
+      "axle": "ВЕДУЧА",
+      "price": 16400,
+      "country": "Угорщина"
+    },
+    {
+      "size": "295/80R22.5",
+      "brand": "Apollo",
+      "model": "RА",
+      "axle": "КЕРМО",
+      "price": 16500,
+      "country": "Угорщина"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "Sava",
+      "model": "Orjak 5",
+      "axle": "ВЕДУЧА",
+      "price": 17500,
+      "country": "Польща"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "Sava",
+      "model": "Avant 5",
+      "axle": "КЕРМО",
+      "price": 17500,
+      "country": "Польща"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "Debica",
+      "model": "DRS2",
+      "axle": "КЕРМО",
+      "price": 16000,
+      "country": "Польща"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "Debica",
+      "model": "DRD2",
+      "axle": "ВЕДУЧА",
+      "price": 16000,
+      "country": "Польща"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "Kelly",
+      "model": "KSM2",
+      "axle": "КЕРМО",
+      "price": 15400,
+      "country": "Польща"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "Kelly",
+      "model": "KDM2",
+      "axle": "ВЕДУЧА",
+      "price": 15600,
+      "country": "Польща"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "Barum",
+      "model": "BD200R",
+      "axle": "ВЕДУЧА",
+      "price": 17800,
+      "country": "Словаччина"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "Barum",
+      "model": "BF200R",
+      "axle": "КЕРМО",
+      "price": 17800,
+      "country": "Словаччина"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "Apollo",
+      "model": "RD 2",
+      "axle": "ВЕДУЧА",
+      "price": 17500,
+      "country": "Угорщина"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "Apollo",
+      "model": "RA 2",
+      "axle": "КЕРМО",
+      "price": 17500,
+      "country": "Угорщина"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "Neoterra",
+      "model": "NT299",
+      "axle": "ВЕДУЧА",
+      "price": 11200,
+      "country": "Китай"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "Neoterra",
+      "model": "NT366",
+      "axle": "КЕРМО",
+      "price": 10700,
+      "country": "Китай"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "Neoterra",
+      "model": "NT899",
+      "axle": "ВЕДУЧА",
+      "price": null,
+      "country": "Китай"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "Windforce",
+      "model": "wd3080",
+      "axle": "ВЕДУЧА",
+      "price": 12100,
+      "country": "Китай"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "Windforce",
+      "model": "wd2020",
+      "axle": "ВЕДУЧА",
+      "price": null,
+      "country": "Китай"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "CEAT",
+      "model": "WINMILE-D",
+      "axle": "ВЕДУЧА",
+      "price": 14600,
+      "country": "Індія"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "CEAT",
+      "model": "WINMILE-S",
+      "axle": "КЕРМО",
+      "price": 14600,
+      "country": "Індія"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "Windforce",
+      "model": "wh1020",
+      "axle": "КЕРМО",
+      "price": 10700,
+      "country": "Китай"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "Greentrac",
+      "model": "GTRS1",
+      "axle": "КЕРМО",
+      "price": 14300,
+      "country": "Тайланд"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "Greentrac",
+      "model": "GTRD1",
+      "axle": "ВЕДУЧА",
+      "price": 14600,
+      "country": "Тайланд"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "SPORTRAK",
+      "model": "SP301",
+      "axle": "КЕРМО",
+      "price": 10300,
+      "country": "Китай"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "SPORTRAK",
+      "model": "SP303",
+      "axle": "ВЕДУЧА",
+      "price": 11200,
+      "country": "Китай"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "TRAZANO",
+      "model": "TransD28",
+      "axle": "ВЕДУЧА",
+      "price": null,
+      "country": "Тайланд"
+    },
+    {
+      "size": "315/70R22.5",
+      "brand": "MIRAGE",
+      "model": "MG 638",
+      "axle": "ВЕДУЧА",
+      "price": 10200,
+      "country": "Китай"
+    },
+    {
+      "size": "315/80R22.5",
+      "brand": "Neoterra",
+      "model": "NT366",
+      "axle": "КЕРМО",
+      "price": 11000,
+      "country": "Китай"
+    },
+    {
+      "size": "315/80R22.5",
+      "brand": "Apollo",
+      "model": "RD",
+      "axle": "ВЕДУЧА",
+      "price": 17000,
+      "country": "Угорщина"
+    },
+    {
+      "size": "315/80R22.5",
+      "brand": "Apollo",
+      "model": "RA",
+      "axle": "КЕРМО",
+      "price": 17500,
+      "country": "Угорщина"
+    },
+    {
+      "size": "315/80R22.5",
+      "brand": "Greentrac",
+      "model": "GTRD1",
+      "axle": "ВЕДУЧА",
+      "price": 14700,
+      "country": "Тайланд"
+    },
+    {
+      "size": "315/80R22.5",
+      "brand": "Greentrac",
+      "model": "GTRS1",
+      "axle": "КЕРМО",
+      "price": 14500,
+      "country": "Тайланд"
+    },
+    {
+      "size": "315/80R22.5",
+      "brand": "Windforce",
+      "model": "wd2020",
+      "axle": "ВЕДУЧА",
+      "price": 10500,
+      "country": "Китай"
+    },
+    {
+      "size": "315/80R22.5",
+      "brand": "Neoterra",
+      "model": "NT899",
+      "axle": "ВЕДУЧА",
+      "price": null,
+      "country": "Китай"
+    },
+    {
+      "size": "315/80R22.5",
+      "brand": "Neoterra",
+      "model": "NT599",
+      "axle": "ВЕДУЧА",
+      "price": 11800,
+      "country": "Китай"
+    },
+    {
+      "size": "315/80R22.5",
+      "brand": "Tracmax",
+      "model": "GRT800",
+      "axle": "КЕРМО",
+      "price": 8900,
+      "country": "Китай"
+    },
+    {
+      "size": "315/80R22.5",
+      "brand": "Tracmax",
+      "model": "GRT880",
+      "axle": "ВЕДУЧА",
+      "price": 10000,
+      "country": "Китай"
+    },
+    {
+      "size": "315/80R22.5",
+      "brand": "Windforce",
+      "model": "wh1020",
+      "axle": "КЕРМО",
+      "price": null,
+      "country": "Китай"
+    },
+    {
+      "size": "315/80R22.5",
+      "brand": "SPORTRAK",
+      "model": "SP906",
+      "axle": "КЕРМО",
+      "price": 10800,
+      "country": "Китай"
+    },
+    {
+      "size": "315/80R22.5",
+      "brand": "SPORTRAK",
+      "model": "SP902",
+      "axle": "ВЕДУЧА",
+      "price": 10500,
+      "country": "Китай"
+    },
+    {
+      "size": "385/55R22.5",
+      "brand": "Windforce",
+      "model": "wh1020",
+      "axle": "КЕРМО",
+      "price": 11600,
+      "country": "Китай"
+    },
+    {
+      "size": "385/55R22.5",
+      "brand": "Windforce",
+      "model": "wt3000",
+      "axle": "ПРИЧІП",
+      "price": 11300,
+      "country": "Китай"
+    },
+    {
+      "size": "385/55R22.5",
+      "brand": "Greentrac",
+      "model": "GTRS1",
+      "axle": "КЕРМО",
+      "price": 14500,
+      "country": "Тайланд"
+    },
+    {
+      "size": "385/55R22.5",
+      "brand": "Greentrac",
+      "model": "GTRT1",
+      "axle": "ПРИЧІП",
+      "price": 14400,
+      "country": "Тайланд"
+    },
+    {
+      "size": "385/55R22.5",
+      "brand": "Neoterra",
+      "model": "NT555",
+      "axle": "ПРИЧІП",
+      "price": 11700,
+      "country": "Китай"
+    },
+    {
+      "size": "385/55R22.5",
+      "brand": "Apollo",
+      "model": "RT 2",
+      "axle": "ПРИЧІП",
+      "price": 17500,
+      "country": "Угорщина"
+    },
+    {
+      "size": "385/55R22.5",
+      "brand": "Apollo",
+      "model": "RA",
+      "axle": "КЕРМО",
+      "price": 19000,
+      "country": "Угорщина"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "Neoterra",
+      "model": "NT555",
+      "axle": "ПРИЧІП",
+      "price": 12900,
+      "country": "Китай"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "Neoterra",
+      "model": "NT333",
+      "axle": "ПРИЧІП",
+      "price": 13500,
+      "country": "Китай"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "Barum",
+      "model": "BF200R",
+      "axle": "КЕРМО",
+      "price": 19500,
+      "country": "Словаччина"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "Barum",
+      "model": "BT300R",
+      "axle": "ПРИЧІП",
+      "price": null,
+      "country": "Словаччина"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "Sava",
+      "model": "AVANT 5",
+      "axle": "КЕРМО",
+      "price": 18300,
+      "country": "Польща"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "Sava",
+      "model": "CARGO 5",
+      "axle": "ПРИЧІП",
+      "price": 17800,
+      "country": "Польща"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "Debica",
+      "model": "DRT2",
+      "axle": "ПРИЧІП",
+      "price": 16200,
+      "country": "Турція"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "Kelly",
+      "model": "KTR2",
+      "axle": "ПРИЧІП",
+      "price": 15500,
+      "country": "Польща"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "TRAZANO",
+      "model": "T 48",
+      "axle": "ПРИЧІП",
+      "price": null,
+      "country": "Тайланд"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "TRAZANO",
+      "model": "T 47",
+      "axle": "ПРИЧІП",
+      "price": null,
+      "country": "Тайланд"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "TRAZANO",
+      "model": "NT S16",
+      "axle": "КЕРМО",
+      "price": 14900,
+      "country": "Тайланд"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "Windforce",
+      "model": "wt3000",
+      "axle": "ПРИЧІП",
+      "price": null,
+      "country": "Китай"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "CEAT",
+      "model": "WINMILE-T",
+      "axle": "ПРИЧІП",
+      "price": 14600,
+      "country": "Індія"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "Greentrac",
+      "model": "GTRТ1",
+      "axle": "ПРИЧІП",
+      "price": 15100,
+      "country": "Тайланд"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "Greentrac",
+      "model": "GTRS1",
+      "axle": "КЕРМО",
+      "price": 15300,
+      "country": "Тайланд"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "SPORTRAK",
+      "model": "SP395",
+      "axle": "ПРИЧІП",
+      "price": 11200,
+      "country": "Китай"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "SPORTRAK",
+      "model": "SP396",
+      "axle": "ПРИЧІП",
+      "price": 12300,
+      "country": "Китай"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "Apollo",
+      "model": "RA",
+      "axle": "КЕРМО",
+      "price": 18600,
+      "country": "Угорщина"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "Apollo",
+      "model": "RT 2",
+      "axle": "ПРИЧІП",
+      "price": 17700,
+      "country": "Угорщина"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "Apollo",
+      "model": "LHT",
+      "axle": "ПРИЧІП",
+      "price": 17500,
+      "country": "Угорщина"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "Windforce",
+      "model": "wh1020",
+      "axle": "КЕРМО",
+      "price": 12500,
+      "country": "Китай"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "MIRAGE",
+      "model": "MG 022",
+      "axle": "ПРИЧІП",
+      "price": 11000,
+      "country": "Китай"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "Tracmax",
+      "model": "GRT932",
+      "axle": "ПРИЧІП",
+      "price": null,
+      "country": "Китай"
+    },
+    {
+      "size": "385/65R22.5",
+      "brand": "наварка",
+      "model": "ruzi",
+      "axle": "ПРИЧІП",
+      "price": null,
+      "country": "Польща"
+    },
+    {
+      "size": "22.5*11.75/0",
+      "brand": "DK",
+      "model": "",
+      "axle": "",
+      "price": 4750,
+      "country": "Китай",
+      "type": "ДИСК"
+    },
+    {
+      "size": "22.5*11.75/120",
+      "brand": "DK",
+      "model": "",
+      "axle": "",
+      "price": 4900,
+      "country": "Китай",
+      "type": "ДИСК"
+    },
+    {
+      "size": "22,5х9,00",
+      "brand": "DK",
+      "model": "",
+      "axle": "",
+      "price": 4500,
+      "country": "Китай",
+      "type": "ДИСК"
+    },
+    {
+      "size": "22.5*11.75/135",
+      "brand": "LEMMERZ",
+      "model": "",
+      "axle": "",
+      "price": 7500,
+      "country": "Німеччина",
+      "type": "ДИСК"
+    },
+    {
+      "size": "22.5*11.75/120",
+      "brand": "LEMMERZ",
+      "model": "",
+      "axle": "",
+      "price": 7000,
+      "country": "Німеччина",
+      "type": "ДИСК"
+    },
+    {
+      "size": "22,5х9,00",
+      "brand": "LEMMERZ",
+      "model": "",
+      "axle": "",
+      "price": 7000,
+      "country": "Німеччина",
+      "type": "ДИСК"
+    }
+  ]

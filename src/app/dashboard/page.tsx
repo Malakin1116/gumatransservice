@@ -1,11 +1,13 @@
-import React from 'react';
+import Link from 'next/link';
 
-export interface PageProps {}
-
-export default function Page({}: PageProps) {
+export default function Home() {
   return (
-    <main>
-      <h1 className="text-xl">Dashboard Page</h1>
-    </main>
+    <div className="max-w-7xl mx-auto px-4 py-8 text-center">
+      <h1 className="text-4xl font-bold mb-6">Ласкаво просимо до ТОВ "ГУМАТРАНССЕРВІС"</h1>
+      <p className="text-lg mb-8">Широкий вибір шин і дисків для вантажних авто. Професійний шиномонтаж у Києві.</p>
+      <Link href="/catalog" className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700">
+        Переглянути каталог
+      </Link>
+    </div>
   );
 }

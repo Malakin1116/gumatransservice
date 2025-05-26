@@ -1,10 +1,13 @@
-import AddCompanyButton from '@/app/components/add-company-button';
+import Link from 'next/link';
 
 export default function Home() {
   return (
-    <main>
-      <h1 className="text-xl">Home page</h1>
-      <AddCompanyButton />
-    </main>
+    <div className="max-w-7xl mx-auto px-4 py-8 text-center">
+      <h1 className="text-4xl font-bold mb-6">Ласкаво просимо до ТОВ "ГУМАТРАНССЕРВІС"</h1>
+      <p className="text-lg mb-8">Широкий вибір шин і дисків для вантажних авто. Професійний шиномонтаж у Києві.</p>
+      <Link href="/catalog" className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700">
+        Переглянути каталог
+      </Link>
+    </div>
   );
 }
