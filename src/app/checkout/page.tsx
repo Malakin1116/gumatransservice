@@ -14,6 +14,11 @@ interface Tire {
   type?: string;
 }
 
+interface CartItem {
+  tire: Tire;
+  quantity: number;
+}
+
 export default function Checkout() {
   const { cart, clearCart } = useCart();
   const [formData, setFormData] = useState({
@@ -22,9 +27,18 @@ export default function Checkout() {
     address: '',
   });
   const [totalPrice, setTotalPrice] = useState(0);
+  const [hasPriceOnRequest, setHasPriceOnRequest] = useState(false);
 
   useEffect(() => {
-    const total = cart.reduce((sum: number, item: Tire) => sum + (item.price || 0), 0);
+    // Перевіряємо, чи є товари з price: null
+    const hasPriceNull = cart.some((item: CartItem) => item.tire.price === null);
+    setHasPriceOnRequest(hasPriceNull);
+
+    // Підраховуємо загальну суму для товарів із ціною
+    const total = cart.reduce(
+      (sum: number, item: CartItem) => sum + (item.tire.price || 0) * item.quantity,
+      0
+    );
     setTotalPrice(total);
   }, [cart]);
 
@@ -33,13 +47,61 @@ export default function Checkout() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const sendOrderToTelegram = async () => {
+    const botToken = process.env.TELEGRAM_BOT_TOKEN || 'YOUR_BOT_TOKEN';
+    const chatId = process.env.TELEGRAM_CHAT_ID || 'YOUR_CHAT_ID';
+    const message = `
+Нове замовлення:
+Ім'я: ${formData.name}
+Телефон: ${formData.phone}
+Адреса: ${formData.address}
+Товари:
+${cart
+  .map(
+    (item: CartItem) =>
+      `- ${item.tire.brand} ${item.tire.model} (${item.tire.size}) x${item.quantity} - ${item.tire.price ? `${(item.tire.price * item.quantity).toLocaleString()} грн` : 'Ціна за запитом'}`
+  )
+  .join('\n')}
+Загальна сума: ${hasPriceOnRequest ? `${totalPrice.toLocaleString()} грн (деякі товари за запитом)` : `${totalPrice.toLocaleString()} грн`}
+Час замовлення: ${new Date().toLocaleString()}
+    `;
+
+    try {
+      const response = await fetch(
+        `https://api.telegram.org/bot${botToken}/sendMessage`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: message,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (!data.ok) {
+        throw new Error('Помилка відправки в Telegram');
+      }
+    } catch (error) {
+      console.error('Помилка відправки в Telegram:', error);
+      alert('Замовлення оформлено, але не вдалося відправити в Telegram. Ми зв’яжемося з вами.');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.phone || !formData.address) {
       alert('Будь ласка, заповніть усі поля.');
       return;
     }
-    alert(`Дякуємо за замовлення, ${formData.name}! Ми зв'яжемося з вами за номером ${formData.phone}.`);
+    if (cart.length === 0) {
+      alert('Ваш кошик порожній.');
+      return;
+    }
+    await sendOrderToTelegram();
+    alert(`Дякуємо за замовлення, ${formData.name}! Ми зв’яжемося з вами за номером ${formData.phone}.`);
     clearCart();
     setFormData({ name: '', phone: '', address: '' });
   };
@@ -80,14 +142,22 @@ export default function Checkout() {
           <>
             <h2 className="text-2xl font-semibold mb-4">Ваше замовлення</h2>
             <ul className="mb-6">
-              {cart.map((item: Tire, index: number) => (
+              {cart.map((item: CartItem, index: number) => (
                 <li key={index} className="flex justify-between py-2 border-b">
-                  <span>{item.brand} {item.model} ({item.size})</span>
-                  <span>{item.price ? `${item.price.toLocaleString()} грн` : 'Ціна за запитом'}</span>
+                  <span>
+                    {item.tire.brand} {item.tire.model} ({item.tire.size}) x{item.quantity}
+                  </span>
+                  <span>
+                    {item.tire.price
+                      ? `${(item.tire.price * item.quantity).toLocaleString()} грн`
+                      : 'Ціна за запитом'}
+                  </span>
                 </li>
               ))}
             </ul>
-            <p className="text-lg font-semibold mb-6">Загальна сума: {totalPrice.toLocaleString()} грн</p>
+            <p className="text-lg font-semibold mb-6">
+              Загальна сума: {hasPriceOnRequest ? `${totalPrice.toLocaleString()} грн (деякі товари за запитом)` : `${totalPrice.toLocaleString()} грн`}
+            </p>
             <h2 className="text-2xl font-semibold mb-4">Дані для доставки</h2>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-md">
               <input
@@ -97,6 +167,7 @@ export default function Checkout() {
                 onChange={handleInputChange}
                 placeholder="Ім'я"
                 className="modern-input"
+                required
               />
               <input
                 type="tel"
@@ -105,6 +176,7 @@ export default function Checkout() {
                 onChange={handleInputChange}
                 placeholder="Телефон"
                 className="modern-input"
+                required
               />
               <input
                 type="text"
@@ -113,6 +185,7 @@ export default function Checkout() {
                 onChange={handleInputChange}
                 placeholder="Адреса доставки"
                 className="modern-input"
+                required
               />
               <button
                 type="submit"
