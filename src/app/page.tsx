@@ -7,10 +7,32 @@ import tiresData from '../../data/tires.json';
 export default function Home() {
   const popularTires = tiresData.slice(0, 3); // Показуємо 3 шини
 
+  // Динамічні відгуки (заглушка для Google Reviews)
   const reviews = [
-    { name: 'Олег К.', text: 'Швидкий шиномонтаж і якісні шини за доступною ціною!', rating: 5 },
-    { name: 'Марія П.', text: 'Зберігала шини на зиму, все в ідеальному стані.', rating: 4 },
-    { name: 'Іван С.', text: 'Професійна команда, рекомендую!', rating: 5 },
+    {
+      author: 'Андрій М.',
+      text: 'Замінили шини на моєму MAN за годину, якість на висоті!',
+      rating: 5,
+      date: '2025-04-15',
+      source: 'Google Reviews',
+      avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
+    },
+    {
+      author: 'Олена Т.',
+      text: 'Зручне зберігання шин, все організовано, рекомендую.',
+      rating: 4,
+      date: '2025-03-20',
+      source: 'Google Reviews',
+      avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
+    },
+    {
+      author: 'Віталій С.',
+      text: 'Професійний підхід, допомогли підібрати шини для вантажівки.',
+      rating: 5,
+      date: '2025-05-10',
+      source: 'Google Reviews',
+      avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
+    },
   ];
 
   return (
@@ -77,24 +99,51 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Секція відгуків */}
+      {/* Секція відгуків (Google Reviews віджет) */}
       <section className="bg-blue-50 py-12">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">Відгуки наших клієнтів</h2>
+          <h2 className="text-3xl font-bold text-center mb-8">Думки наших клієнтів</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {reviews.map((review, index) => (
               <div
                 key={index}
-                className="bg-white rounded-lg shadow-lg p-6 transform transition-transform duration-500 hover:scale-105 animate-slide-in"
-                style={{ animationDelay: `${index * 200}ms` }}
+                className="bg-white rounded-lg shadow-md p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
               >
-                <p className="text-gray-600 mb-4">"{review.text}"</p>
-                <div className="flex items-center">
-                  <span className="text-yellow-400">{'★'.repeat(review.rating)}</span>
-                  <span className="ml-2 font-semibold">{review.name}</span>
+                <div className="flex items-center mb-4">
+                  <img
+                    src={review.avatar}
+                    alt={review.author}
+                    className="w-10 h-10 rounded-full mr-3"
+                  />
+                  <div>
+                    <p className="font-semibold text-gray-800">{review.author}</p>
+                    <p className="text-sm text-gray-500">{review.date}</p>
+                  </div>
                 </div>
+                <div className="flex mb-2">
+                  <span className="text-yellow-400">{'★'.repeat(review.rating)}</span>
+                </div>
+                <p className="text-gray-600 mb-4">{review.text}</p>
+                <a
+                  href="https://www.google.com/maps/place/Your+Business"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 text-sm hover:underline"
+                >
+                  Читати на {review.source}
+                </a>
               </div>
             ))}
+          </div>
+          <div className="text-center mt-8">
+            <a
+              href="https://www.google.com/maps/place/Your+Business"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition-transform transform hover:scale-105"
+            >
+              Дивитись усі відгуки
+            </a>
           </div>
         </div>
       </section>

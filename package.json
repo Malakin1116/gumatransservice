@@ -1,18 +1,22 @@
 {
-  "name": "crm",
+  "name": "gumatransservice",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postbuild": "next-sitemap"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.19",
     "clsx": "^2.1.1",
     "formik": "^2.4.6",
     "next": "14.0.5-canary.51",
+    "next-seo": "^6.8.0",
+    "next-sitemap": "^4.2.3",
+    "rc-slider": "^11.1.8",
     "react": "^18",
     "react-dom": "^18",
     "recharts": "^2.15.3"
