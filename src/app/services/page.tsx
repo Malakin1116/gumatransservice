@@ -26,12 +26,6 @@ export default function Services() {
       price: 'від 200 грн',
       icon: '🩹',
     },
-    {
-      title: 'Сезонне зберігання шин',
-      description: 'Зберігання шин у належних умовах до наступного сезону.',
-      price: 'від 100 грн/місяць',
-      icon: '📦',
-    },
   ];
 
   const priceTable = [
@@ -41,15 +35,58 @@ export default function Services() {
     { service: 'Балансування (R22.5)', price: '350 грн/колесо' },
     { service: 'Ремонт проколу', price: '200 грн' },
     { service: 'Ремонт порізу', price: '400 грн' },
-    { service: 'Сезонне зберігання (4 колеса)', price: '400 грн/місяць' },
   ];
+
+  const sendBookingToTelegram = async (values: { name: string; phone: string; date: string; service: string }) => {
+    const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    const chatId = process.env.TELEGRAM_CHAT_ID;
+
+    if (!botToken || !chatId) {
+      console.error('Помилка: TELEGRAM_BOT_TOKEN або TELEGRAM_CHAT_ID не визначені.');
+      throw new Error('Налаштування Telegram некоректні');
+    }
+
+    const message = `
+Новий запит на шиномонтаж:
+Ім'я: ${values.name}
+Телефон: ${values.phone}
+Бажана дата: ${values.date || 'Не вказано'}
+Послуга: ${values.service}
+Час запиту: ${new Date().toLocaleString()}
+    `;
+
+    try {
+      const response = await fetch(
+        `https://api.telegram.org/bot${botToken}/sendMessage`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: message,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (!data.ok) {
+        console.error('Відповідь Telegram API:', data);
+        throw new Error(`Помилка відправки в Telegram: ${data.description}`);
+      }
+      console.log('Запит на шиномонтаж успішно відправлено в Telegram:', data);
+    } catch (error) {
+      console.error('Помилка відправки в Telegram:', error);
+      throw error;
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <h2 className="text-3xl font-bold text-center mb-8">Послуги шиномонтажу</h2>
 
       {/* Картки послуг */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         {services.map((service, index) => (
           <div
             key={index}
@@ -100,10 +137,14 @@ export default function Services() {
         ) : (
           <Formik
             initialValues={{ name: '', phone: '', date: '', service: '' }}
-            onSubmit={(values, { resetForm }) => {
-              console.log(values); // Для тестування
-              setSubmitted(true);
-              resetForm();
+            onSubmit={async (values, { resetForm }) => {
+              try {
+                await sendBookingToTelegram(values);
+                setSubmitted(true);
+                resetForm();
+              } catch (error) {
+                alert('Запит оформлено, але не вдалося відправити в Telegram. Ми зв’яжемося з вами.');
+              }
             }}
           >
             <Form className="flex flex-col gap-4">
@@ -124,14 +165,12 @@ export default function Services() {
                 name="date"
                 type="date"
                 className="p-3 border rounded"
-                required
               />
               <Field as="select" name="service" className="p-3 border rounded" required>
                 <option value="">Оберіть послугу</option>
                 <option value="Шиномонтаж">Шиномонтаж</option>
                 <option value="Балансування">Балансування</option>
                 <option value="Ремонт шин">Ремонт шин</option>
-                <option value="Зберігання шин">Зберігання шин</option>
               </Field>
               <button
                 type="submit"
