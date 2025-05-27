@@ -24,17 +24,21 @@ export default function Checkout() {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    address: '',
+    bookTireChange: true,
+    postalDelivery: false,
+    postalCity: '',
+    postalBranch: '',
+    postalAddress: '',
   });
   const [totalPrice, setTotalPrice] = useState(0);
   const [hasPriceOnRequest, setHasPriceOnRequest] = useState(false);
+  const [isMounted, setIsMounted] = useState(false); // Для уникнення невідповідності гідратації
 
   useEffect(() => {
-    // Перевіряємо, чи є товари з price: null
+    setIsMounted(true); // Помічаємо, що компонент змонтований на клієнті
     const hasPriceNull = cart.some((item: CartItem) => item.tire.price === null);
     setHasPriceOnRequest(hasPriceNull);
 
-    // Підраховуємо загальну суму для товарів із ціною
     const total = cart.reduce(
       (sum: number, item: CartItem) => sum + (item.tire.price || 0) * item.quantity,
       0
@@ -42,19 +46,43 @@ export default function Checkout() {
     setTotalPrice(total);
   }, [cart]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value, type } = e.target;
+    const isCheckbox = type === 'checkbox';
+    setFormData({
+      ...formData,
+      [name]: isCheckbox ? (e.target as HTMLInputElement).checked : value,
+    });
   };
 
   const sendOrderToTelegram = async () => {
-    const botToken = process.env.TELEGRAM_BOT_TOKEN || 'YOUR_BOT_TOKEN';
-    const chatId = process.env.TELEGRAM_CHAT_ID || 'YOUR_CHAT_ID';
+    const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    const chatId = process.env.TELEGRAM_CHAT_ID;
+
+    if (!botToken || !chatId) {
+      console.error('Помилка: TELEGRAM_BOT_TOKEN або TELEGRAM_CHAT_ID не визначені.');
+      throw new Error('Налаштування Telegram некоректні');
+    }
+
     const message = `
 Нове замовлення:
 Ім'я: ${formData.name}
 Телефон: ${formData.phone}
-Адреса: ${formData.address}
+${
+  formData.bookTireChange
+    ? 'Запис на перевзування: Так (ми зателефонуємо вам і оберемо найкращий варіант)'
+    : 'Запис на перевзування: Ні'
+}
+${
+  formData.postalDelivery
+    ? `Доставка поштою: Так
+Місто: ${formData.postalCity}
+Номер відділення Нової Пошти: ${formData.postalBranch}
+Адреса для кур’єрської доставки: ${formData.postalAddress || 'Не вказано'}`
+    : 'Доставка поштою: Ні'
+}
 Товари:
 ${cart
   .map(
@@ -82,17 +110,19 @@ ${cart
       );
       const data = await response.json();
       if (!data.ok) {
-        throw new Error('Помилка відправки в Telegram');
+        console.error('Відповідь Telegram API:', data);
+        throw new Error(`Помилка відправки в Telegram: ${data.description}`);
       }
+      console.log('Повідомлення успішно відправлено в Telegram:', data);
     } catch (error) {
       console.error('Помилка відправки в Telegram:', error);
-      alert('Замовлення оформлено, але не вдалося відправити в Telegram. Ми зв’яжемося з вами.');
+      throw error;
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.phone || !formData.address) {
+    if (!formData.name || !formData.phone) {
       alert('Будь ласка, заповніть усі поля.');
       return;
     }
@@ -100,11 +130,32 @@ ${cart
       alert('Ваш кошик порожній.');
       return;
     }
-    await sendOrderToTelegram();
-    alert(`Дякуємо за замовлення, ${formData.name}! Ми зв’яжемося з вами за номером ${formData.phone}.`);
+    if (formData.postalDelivery && (!formData.postalCity || !formData.postalBranch)) {
+      alert('Будь ласка, заповніть усі поля для доставки Новою Поштою.');
+      return;
+    }
+    try {
+      await sendOrderToTelegram();
+      alert(`Дякуємо за замовлення, ${formData.name}! Ми зв’яжемося з вами за номером ${formData.phone}.`);
+    } catch (error) {
+      alert('Замовлення оформлено, але не вдалося відправити в Telegram. Ми зв’яжемося з вами.');
+    }
     clearCart();
-    setFormData({ name: '', phone: '', address: '' });
+    setFormData({
+      name: '',
+      phone: '',
+      bookTireChange: true,
+      postalDelivery: false,
+      postalCity: '',
+      postalBranch: '',
+      postalAddress: '',
+    });
   };
+
+  // Уникаємо рендерингу кошика на сервері до завершення гідратації
+  if (!isMounted) {
+    return null; // Повертаємо null на сервері, щоб уникнути невідповідності
+  }
 
   return (
     <>
@@ -158,7 +209,7 @@ ${cart
             <p className="text-lg font-semibold mb-6">
               Загальна сума: {hasPriceOnRequest ? `${totalPrice.toLocaleString()} грн (деякі товари за запитом)` : `${totalPrice.toLocaleString()} грн`}
             </p>
-            <h2 className="text-2xl font-semibold mb-4">Дані для доставки</h2>
+            <h2 className="text-2xl font-semibold mb-4">Дані для замовлення</h2>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-md">
               <input
                 type="text"
@@ -178,15 +229,61 @@ ${cart
                 className="modern-input"
                 required
               />
-              <input
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleInputChange}
-                placeholder="Адреса доставки"
-                className="modern-input"
-                required
-              />
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  name="bookTireChange"
+                  checked={formData.bookTireChange}
+                  onChange={handleInputChange}
+                  className="h-5 w-5"
+                />
+                <span className="text-gray-600">Записатись на перевзування</span>
+              </label>
+              {formData.bookTireChange && (
+                <p className="text-sm text-gray-500">
+                  Ми зателефонуємо вам і оберемо для вас найкращий варіант.
+                </p>
+              )}
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  name="postalDelivery"
+                  checked={formData.postalDelivery}
+                  onChange={handleInputChange}
+                  className="h-5 w-5"
+                />
+                <span className="text-gray-600">Доставка Новою Поштою</span>
+              </label>
+              {formData.postalDelivery && (
+                <div className="flex flex-col gap-4">
+                  <input
+                    type="text"
+                    name="postalCity"
+                    value={formData.postalCity}
+                    onChange={handleInputChange}
+                    placeholder="Місто"
+                    className="modern-input"
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="postalBranch"
+                    value={formData.postalBranch}
+                    onChange={handleInputChange}
+                    placeholder="Номер відділення Нової Пошти"
+                    className="modern-input"
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="postalAddress"
+                    value={formData.postalAddress}
+                    onChange={handleInputChange}
+                    placeholder="Адреса для кур’єрської доставки (необов’язково)"
+                    className="modern-input"
+                  />
+                </div>
+              )}
               <button
                 type="submit"
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200"
