@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import Link from 'next/link';
 import TirePlaceholderSVG from '../components/TirePlaceholderSVG';
@@ -20,6 +21,23 @@ interface CartItem {
 }
 
 export default function Cart() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6">Кошик</h1>
+        <div className="text-center py-12 bg-white rounded-lg shadow-md">
+          <p className="text-gray-600 text-lg">Завантаження...</p>
+        </div>
+      </div>
+    );
+  }
+
   const { cart, removeFromCart, updateQuantity, totalCartPrice } = useCart();
 
   const handleQuantityChange = (index: number, value: string) => {
@@ -58,11 +76,11 @@ export default function Cart() {
         </div>
       ) : (
         <div className="space-y-6">
-          <div className="catalog-grid gap-4 mb-12">
+          <div className="catalog-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
             {cart.map((item: CartItem, index: number) => {
               const itemTotal = item.tire.price ? item.tire.price * item.quantity : null;
               return (
-                <div key={index} className="catalog-card card-hover">
+                <div key={index} className="catalog-card bg-white rounded-lg shadow-lg p-6 flex flex-col hover:shadow-xl transition-shadow duration-300">
                   <TirePlaceholderSVG className="w-full h-32 object-cover rounded mb-4" />
                   <h3 className="text-base font-semibold mb-2">{item.tire.brand} {item.tire.model}</h3>
                   <p className="text-gray-600 text-sm mb-1">Тип: {item.tire.type || 'Шина'}</p>
@@ -81,6 +99,7 @@ export default function Cart() {
                     <button
                       onClick={() => updateQuantity(index, item.quantity - 1)}
                       className="bg-gray-200 px-3 py-1 rounded text-sm hover:bg-gray-300"
+                      disabled={item.quantity <= 1}
                     >
                       -
                     </button>
@@ -88,7 +107,7 @@ export default function Cart() {
                       type="number"
                       value={item.quantity}
                       onChange={(e) => handleQuantityChange(index, e.target.value)}
-                      className="w-12 p-1 border rounded text-sm text-center no-spinner"
+                      className="w-12 p-1 border rounded text-sm text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       min="1"
                     />
                     <button
@@ -109,10 +128,10 @@ export default function Cart() {
             })}
           </div>
           <div className="bg-white rounded-lg shadow-md p-6 text-end">
-            <p className="cart-total">Разом: {totalCartPrice.toLocaleString()} грн</p>
+            <p className="cart-total text-xl font-bold text-gray-800 mb-4">Разом: {totalCartPrice.toLocaleString()} грн</p>
             <Link
               href="/checkout"
-              className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 inline-block"
+              className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 inline-block transition-transform transform hover:scale-105"
             >
               Оформити замовлення
             </Link>
