@@ -9,6 +9,53 @@ export default function Contacts() {
   const boryspilMapLink = "https://maps.app.goo.gl/pSPjEEWP8pi4Y4jZA";
   const hurivshchynaMapLink = "https://maps.app.goo.gl/6f1imretRviTXtJF7";
 
+  const sendMessageToTelegram = async (values: { name: string; email: string; message: string }) => {
+    const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    const chatId = process.env.TELEGRAM_CHAT_ID;
+
+    console.log('Bot Token:', botToken ? 'Defined' : 'Undefined');
+    console.log('Chat ID:', chatId ? 'Defined' : 'Undefined');
+
+    if (!botToken || !chatId) {
+      console.error('Помилка: TELEGRAM_BOT_TOKEN або TELEGRAM_CHAT_ID не визначені.');
+      throw new Error('Налаштування Telegram некоректні');
+    }
+
+    const message = `
+Нове повідомлення з форми зворотного зв’язку:
+Ім'я: ${values.name}
+Email: ${values.email}
+Повідомлення: ${values.message}
+Час надсилання: ${new Date().toLocaleString()}
+    `;
+
+    try {
+      const response = await fetch(
+        `https://api.telegram.org/bot${botToken}/sendMessage`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: message,
+          }),
+        }
+      );
+      const data = await response.json();
+      console.log('Відповідь Telegram API:', data);
+      if (!data.ok) {
+        console.error('Помилка Telegram API:', data);
+        throw new Error(`Помилка відправки в Telegram: ${data.description}`);
+      }
+      console.log('Повідомлення успішно відправлено в Telegram:', data);
+    } catch (error) {
+      console.error('Помилка відправки в Telegram:', error);
+      throw error;
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <h2 className="text-4xl font-extrabold text-center mb-12 text-blue-900 animate-fade-in flex items-center justify-center">
@@ -131,10 +178,14 @@ export default function Contacts() {
         ) : (
           <Formik
             initialValues={{ name: '', email: '', message: '' }}
-            onSubmit={(values, { resetForm }) => {
-              console.log(values); // Для тестування
-              setSubmitted(true);
-              resetForm();
+            onSubmit={async (values, { resetForm }) => {
+              try {
+                await sendMessageToTelegram(values);
+                setSubmitted(true);
+                resetForm();
+              } catch (error) {
+                alert('Повідомлення не вдалося відправити. Спробуйте ще раз або зв’яжіться з нами за телефоном.');
+              }
             }}
           >
             <Form className="flex flex-col gap-4">

@@ -1,8 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import Link from 'next/link';
+import * as Yup from 'yup';
+
+interface FormValues {
+  name: string;
+  phone: string;
+  date: string;
+  time: string;
+  service: string;
+}
 
 export default function Services() {
   const [submitted, setSubmitted] = useState(false);
@@ -50,12 +59,23 @@ export default function Services() {
     { service: 'Ремонт порізу', price: '400 грн' },
   ];
 
-  const sendBookingToTelegram = async (values: { name: string; phone: string; date: string; service: string }) => {
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Ім'я обов'язкове"),
+    phone: Yup.string()
+      .matches(/^\+380[0-9]{9}$/, 'Номер телефону має бути у форматі +380XXXXXXXXX')
+      .required("Номер телефону обов'язковий"),
+    date: Yup.string().optional(),
+    time: Yup.string()
+      .matches(/^(0[8-9]|1[0-9]):[0-5][0-9]$/, 'Час має бути між 08:00 та 19:00')
+      .optional(),
+    service: Yup.string().required("Оберіть послугу"),
+  });
+
+  const sendBookingToTelegram = async (values: FormValues) => {
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
     const chatId = process.env.TELEGRAM_CHAT_ID;
 
     if (!botToken || !chatId) {
-      console.error('Помилка: TELEGRAM_BOT_TOKEN або TELEGRAM_CHAT_ID не визначені.');
       throw new Error('Налаштування Telegram некоректні');
     }
 
@@ -64,33 +84,20 @@ export default function Services() {
 Ім'я: ${values.name}
 Телефон: ${values.phone}
 Бажана дата: ${values.date || 'Не вказано'}
+Бажаний час: ${values.time || 'Не вказано'}
 Послуга: ${values.service}
 Час запиту: ${new Date().toLocaleString()}
     `;
 
-    try {
-      const response = await fetch(
-        `https://api.telegram.org/bot${botToken}/sendMessage`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            chat_id: chatId,
-            text: message,
-          }),
-        }
-      );
-      const data = await response.json();
-      if (!data.ok) {
-        console.error('Відповідь Telegram API:', data);
-        throw new Error(`Помилка відправки в Telegram: ${data.description}`);
-      }
-      console.log('Запит на шиномонтаж успішно відправлено в Telegram:', data);
-    } catch (error) {
-      console.error('Помилка відправки в Telegram:', error);
-      throw error;
+    const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text: message }),
+    });
+
+    const data = await response.json();
+    if (!data.ok) {
+      throw new Error(`Помилка відправки: ${data.description}`);
     }
   };
 
@@ -183,8 +190,9 @@ export default function Services() {
           </div>
         ) : (
           <Formik
-            initialValues={{ name: '', phone: '', date: '', service: '' }}
-            onSubmit={async (values, { resetForm }) => {
+            initialValues={{ name: '', phone: '', date: '', time: '', service: '' }}
+            validationSchema={validationSchema}
+            onSubmit={async (values: FormValues, { resetForm }) => {
               try {
                 await sendBookingToTelegram(values);
                 setSubmitted(true);
@@ -194,38 +202,73 @@ export default function Services() {
               }
             }}
           >
-            <Form className="flex flex-col gap-4">
-              <Field
-                name="name"
-                placeholder="Ваше ім’я"
-                className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
-                required
-              />
-              <Field
-                name="phone"
-                type="tel"
-                placeholder="Номер телефону"
-                className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
-                required
-              />
-              <Field
-                name="date"
-                type="date"
-                className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
-              />
-              <Field as="select" name="service" className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white" required>
-                <option value="">Оберіть послугу</option>
-                <option value="Шиномонтаж">Шиномонтаж</option>
-                <option value="Балансування">Балансування</option>
-                <option value="Ремонт шин">Ремонт шин</option>
-              </Field>
-              <button
-                type="submit"
-                className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-8 py-3 rounded-full font-semibold hover:from-blue-600 hover:to-blue-800 transition-transform transform hover:scale-105"
-              >
-                Записатися
-              </button>
-            </Form>
+            {({ setFieldValue, values }) => (
+              <Form className="flex flex-col gap-4">
+                <div>
+                  <Field
+                    name="name"
+                    placeholder="Введіть ваше ім’я"
+                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white w-full placeholder-gray-400"
+                  />
+                  <ErrorMessage name="name" component="p" className="text-red-500 text-sm mt-1" />
+                </div>
+                <div>
+                  <Field
+                    name="phone"
+                    type="tel"
+                    placeholder="+380"
+                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white w-full placeholder-gray-400"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      let value = e.target.value;
+                      if (!value.startsWith('+380')) {
+                        value = '+380' + value.replace(/^\+380/, '');
+                      }
+                      setFieldValue('phone', value);
+                    }}
+                  />
+                  <ErrorMessage name="phone" component="p" className="text-red-500 text-sm mt-1" />
+                </div>
+                <div>
+                  <Field
+                    name="date"
+                    type="date"
+                    placeholder="Оберіть дату"
+                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white w-full placeholder-gray-400"
+                  />
+                  <ErrorMessage name="date" component="p" className="text-red-500 text-sm mt-1" />
+                </div>
+                <div>
+                  <Field
+                    name="time"
+                    type="time"
+                    min="08:00"
+                    max="19:00"
+                    placeholder="Оберіть час"
+                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white w-full placeholder-gray-400"
+                  />
+                  <ErrorMessage name="time" component="p" className="text-red-500 text-sm mt-1" />
+                </div>
+                <div>
+                  <Field
+                    as="select"
+                    name="service"
+                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white w-full placeholder-gray-400"
+                  >
+                    <option value="" disabled>Оберіть послугу</option>
+                    <option value="Шиномонтаж">Шиномонтаж</option>
+                    <option value="Балансування">Балансування</option>
+                    <option value="Ремонт шин">Ремонт шин</option>
+                  </Field>
+                  <ErrorMessage name="service" component="p" className="text-red-500 text-sm mt-1" />
+                </div>
+                <button
+                  type="submit"
+                  className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-8 py-3 rounded-full font-semibold hover:from-blue-600 hover:to-blue-800 transition-transform transform hover:scale-105"
+                >
+                  Записатися
+                </button>
+              </Form>
+            )}
           </Formik>
         )}
       </div>

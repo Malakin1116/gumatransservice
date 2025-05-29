@@ -79,12 +79,10 @@ export default function DisksCatalog() {
 
     if (sortBy) {
       filtered = [...filtered].sort((a, b) => {
-        // Елементи з price: null завжди йдуть внизу
         if (a.price === null && b.price !== null) return 1;
         if (a.price !== null && b.price === null) return -1;
         if (a.price === null && b.price === null) return 0;
 
-        // Сортування для елементів із ціною
         if (sortBy === 'price') {
           const priceA = a.price!;
           const priceB = b.price!;
@@ -103,7 +101,6 @@ export default function DisksCatalog() {
         return 0;
       });
     } else {
-      // Якщо сортування не вибрано, все одно ставимо price: null внизу
       filtered = [...filtered].sort((a, b) => {
         if (a.price === null && b.price !== null) return 1;
         if (a.price !== null && b.price === null) return -1;
@@ -180,8 +177,16 @@ export default function DisksCatalog() {
   const sendRequestToTelegram = async (values: { phone: string; contactMethod: string; messenger?: string }) => {
     if (!selectedDisk) return;
 
-    const botToken = 'YOUR_BOT_TOKEN';
-    const chatId = 'YOUR_CHAT_ID';
+    const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    const chatId = process.env.TELEGRAM_CHAT_ID;
+
+    console.log('Bot Token:', botToken ? 'Defined' : 'Undefined');
+    console.log('Chat ID:', chatId ? 'Defined' : 'Undefined');
+
+    if (!botToken || !chatId) {
+      console.error('Помилка: TELEGRAM_BOT_TOKEN або TELEGRAM_CHAT_ID не визначені.');
+      throw new Error('Налаштування Telegram некоректні');
+    }
 
     const message = `
 Запит на диск:
@@ -207,9 +212,12 @@ ${values.messenger ? `Месенджер: ${values.messenger}` : ''}
         }
       );
       const data = await response.json();
+      console.log('Відповідь Telegram API:', data);
       if (!data.ok) {
-        throw new Error(`Помилка відправки: ${data.description}`);
+        console.error('Помилка Telegram API:', data);
+        throw new Error(`Помилка відправки в Telegram: ${data.description}`);
       }
+      console.log('Повідомлення успішно відправлено в Telegram:', data);
       return true;
     } catch (error) {
       console.error('Помилка відправки в Telegram:', error);
@@ -220,7 +228,7 @@ ${values.messenger ? `Месенджер: ${values.messenger}` : ''}
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <Head>
-        <title>Каталог дисків для вантажівок | Назва сайту</title>
+        <title>Каталог дисків для вантажівок | ГУМАТРАНССЕРВІС</title>
         <meta name="description" content="Купіть диски для вантажівок від провідних брендів за вигідними цінами. Широкий вибір розмірів." />
         <meta name="keywords" content="вантажні диски, диски для вантажівок, купити диски, ціни на диски" />
       </Head>

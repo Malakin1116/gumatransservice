@@ -14,8 +14,8 @@ const DiskPlaceholderSVG: React.FC<DiskPlaceholderSVGProps> = ({ className }) =>
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* Обід (диск) */}
-      <circle cx="48" cy="48" r="29" fill="#4B5563"/>
+      {/* Обід (диск) з обведенням */}
+      <circle cx="48" cy="48" r="29" fill="#4B5563" stroke="#1F2937" strokeWidth="2"/>
       {/* Центральний диск */}
       <circle cx="48" cy="48" r="14" fill="#6B7280"/>
       {/* Отвори в диску */}

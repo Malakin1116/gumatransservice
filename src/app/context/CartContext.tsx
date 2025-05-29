@@ -30,16 +30,22 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [cart, setCart] = useState<CartItem[]>(() => {
-    const savedCart = typeof window !== 'undefined' ? localStorage.getItem('cart') : null;
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    setIsMounted(true);
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
       localStorage.setItem('cart', JSON.stringify(cart));
     }
-  }, [cart]);
+  }, [cart, isMounted]);
 
   const addToCart = (tire: Tire) => {
     setCart((prev) => {
@@ -77,9 +83,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clearCart = () => {
     setCart([]);
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('cart');
-    }
+    localStorage.removeItem('cart');
   };
 
   const totalCartPrice = cart.reduce(
@@ -88,6 +92,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   );
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  if (!isMounted) {
+    return <>{children}</>;
+  }
 
   return (
     <CartContext.Provider
