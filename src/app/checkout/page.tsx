@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { NextSeo } from 'next-seo';
 import { useCart } from '../context/CartContext';
+import * as Yup from 'yup';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 
 interface Tire {
   size: string;
@@ -19,23 +21,24 @@ interface CartItem {
   quantity: number;
 }
 
+interface FormValues {
+  name: string;
+  phone: string;
+  bookTireChange: boolean;
+  postalDelivery: boolean;
+  postalCity: string;
+  postalBranch: string;
+  postalAddress: string;
+}
+
 export default function Checkout() {
   const { cart, clearCart } = useCart();
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    bookTireChange: true,
-    postalDelivery: false,
-    postalCity: '',
-    postalBranch: '',
-    postalAddress: '',
-  });
   const [totalPrice, setTotalPrice] = useState(0);
   const [hasPriceOnRequest, setHasPriceOnRequest] = useState(false);
-  const [isMounted, setIsMounted] = useState(false); // Для уникнення невідповідності гідратації
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true); // Помічаємо, що компонент змонтований на клієнті
+    setIsMounted(true);
     const hasPriceNull = cart.some((item: CartItem) => item.tire.price === null);
     setHasPriceOnRequest(hasPriceNull);
 
@@ -46,115 +49,61 @@ export default function Checkout() {
     setTotalPrice(total);
   }, [cart]);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value, type } = e.target;
-    const isCheckbox = type === 'checkbox';
-    setFormData({
-      ...formData,
-      [name]: isCheckbox ? (e.target as HTMLInputElement).checked : value,
-    });
-  };
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Ім'я обов'язкове"),
+    phone: Yup.string()
+      .matches(/^\+380[0-9]{9}$/, 'Номер телефону має бути у форматі +380XXXXXXXXX')
+      .required("Номер телефону обов'язковий"),
+    postalCity: Yup.string().when('postalDelivery', {
+      is: (postalDelivery: boolean) => postalDelivery,
+      then: (schema) => schema.required('Місто обов’язкове'),
+      otherwise: (schema) => schema.optional(),
+    }),
+    postalBranch: Yup.string().when('postalDelivery', {
+      is: (postalDelivery: boolean) => postalDelivery,
+      then: (schema) => schema.required('Номер відділення обов’язковий'),
+      otherwise: (schema) => schema.optional(),
+    }),
+    postalAddress: Yup.string().optional(),
+  });
 
-  const sendOrderToTelegram = async () => {
+  const sendOrderToTelegram = async (values: FormValues) => {
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
     const chatId = process.env.TELEGRAM_CHAT_ID;
 
     if (!botToken || !chatId) {
-      console.error('Помилка: TELEGRAM_BOT_TOKEN або TELEGRAM_CHAT_ID не визначені.');
       throw new Error('Налаштування Telegram некоректні');
     }
 
     const message = `
 Нове замовлення:
-Ім'я: ${formData.name}
-Телефон: ${formData.phone}
-${
-  formData.bookTireChange
-    ? 'Запис на перевзування: Так (ми зателефонуємо вам і оберемо найкращий варіант)'
-    : 'Запис на перевзування: Ні'
-}
-${
-  formData.postalDelivery
-    ? `Доставка поштою: Так
-Місто: ${formData.postalCity}
-Номер відділення Нової Пошти: ${formData.postalBranch}
-Адреса для кур’єрської доставки: ${formData.postalAddress || 'Не вказано'}`
-    : 'Доставка поштою: Ні'
-}
+Ім'я: ${values.name}
+Телефон: ${values.phone}
+${values.bookTireChange ? 'Запис на перевзування: Так (ми зателефонуємо вам і оберемо найкращий варіант)' : 'Запис на перевзування: Ні'}
+${values.postalDelivery ? `Доставка поштою: Так
+Місто: ${values.postalCity}
+Номер відділення Нової Пошти: ${values.postalBranch}
+Адреса для кур’єрської доставки: ${values.postalAddress || 'Не вказано'}` : 'Доставка поштою: Ні'}
 Товари:
-${cart
-  .map(
-    (item: CartItem) =>
-      `- ${item.tire.brand} ${item.tire.model} (${item.tire.size}) x${item.quantity} - ${item.tire.price ? `${(item.tire.price * item.quantity).toLocaleString()} грн` : 'Ціна за запитом'}`
-  )
-  .join('\n')}
+${cart.map((item: CartItem) => `- ${item.tire.brand} ${item.tire.model} (${item.tire.size}) x${item.quantity} - ${item.tire.price ? `${(item.tire.price * item.quantity).toLocaleString()} грн` : 'Ціна за запитом'}`).join('\n')}
 Загальна сума: ${hasPriceOnRequest ? `${totalPrice.toLocaleString()} грн (деякі товари за запитом)` : `${totalPrice.toLocaleString()} грн`}
 Час замовлення: ${new Date().toLocaleString()}
     `;
 
-    try {
-      const response = await fetch(
-        `https://api.telegram.org/bot${botToken}/sendMessage`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            chat_id: chatId,
-            text: message,
-          }),
-        }
-      );
-      const data = await response.json();
-      if (!data.ok) {
-        console.error('Відповідь Telegram API:', data);
-        throw new Error(`Помилка відправки в Telegram: ${data.description}`);
-      }
-      console.log('Повідомлення успішно відправлено в Telegram:', data);
-    } catch (error) {
-      console.error('Помилка відправки в Telegram:', error);
-      throw error;
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name || !formData.phone) {
-      alert('Будь ласка, заповніть усі поля.');
-      return;
-    }
-    if (cart.length === 0) {
-      alert('Ваш кошик порожній.');
-      return;
-    }
-    if (formData.postalDelivery && (!formData.postalCity || !formData.postalBranch)) {
-      alert('Будь ласка, заповніть усі поля для доставки Новою Поштою.');
-      return;
-    }
-    try {
-      await sendOrderToTelegram();
-      alert(`Дякуємо за замовлення, ${formData.name}! Ми зв’яжемося з вами за номером ${formData.phone}.`);
-    } catch (error) {
-      alert('Замовлення оформлено, але не вдалося відправити в Telegram. Ми зв’яжемося з вами.');
-    }
-    clearCart();
-    setFormData({
-      name: '',
-      phone: '',
-      bookTireChange: true,
-      postalDelivery: false,
-      postalCity: '',
-      postalBranch: '',
-      postalAddress: '',
+    const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text: message }),
     });
+
+    const data = await response.json();
+    if (!data.ok) {
+      throw new Error(`Помилка відправки в Telegram: ${data.description}`);
+    }
   };
 
-  // Уникаємо рендерингу кошика на сервері до завершення гідратації
   if (!isMounted) {
-    return null; // Повертаємо null на сервері, щоб уникнути невідповідності
+    return null;
   }
 
   return (
@@ -190,108 +139,135 @@ ${cart
             <p className="text-lg text-gray-600">Ваш кошик порожній.</p>
           </div>
         ) : (
-          <>
-            <h2 className="text-2xl font-semibold mb-4">Ваше замовлення</h2>
-            <ul className="mb-6">
-              {cart.map((item: CartItem, index: number) => (
-                <li key={index} className="flex justify-between py-2 border-b">
-                  <span>
-                    {item.tire.brand} {item.tire.model} ({item.tire.size}) x{item.quantity}
-                  </span>
-                  <span>
-                    {item.tire.price
-                      ? `${(item.tire.price * item.quantity).toLocaleString()} грн`
-                      : 'Ціна за запитом'}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <p className="text-lg font-semibold mb-6">
-              Загальна сума: {hasPriceOnRequest ? `${totalPrice.toLocaleString()} грн (деякі товари за запитом)` : `${totalPrice.toLocaleString()} грн`}
-            </p>
-            <h2 className="text-2xl font-semibold mb-4">Дані для замовлення</h2>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-md">
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                placeholder="Ім'я"
-                className="modern-input"
-                required
-              />
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                placeholder="Телефон"
-                className="modern-input"
-                required
-              />
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  name="bookTireChange"
-                  checked={formData.bookTireChange}
-                  onChange={handleInputChange}
-                  className="h-5 w-5"
-                />
-                <span className="text-gray-600">Записатись на перевзування</span>
-              </label>
-              {formData.bookTireChange && (
-                <p className="text-sm text-gray-500">
-                  Ми зателефонуємо вам і оберемо для вас найкращий варіант.
+          <Formik
+            initialValues={{
+              name: '',
+              phone: '',
+              bookTireChange: true,
+              postalDelivery: false,
+              postalCity: '',
+              postalBranch: '',
+              postalAddress: '',
+            }}
+            validationSchema={validationSchema}
+            onSubmit={async (values: FormValues, { resetForm }) => {
+              if (cart.length === 0) {
+                alert('Ваш кошик порожній.');
+                return;
+              }
+              try {
+                await sendOrderToTelegram(values);
+                alert(`Дякуємо за замовлення, ${values.name}! Ми зв’яжемося з вами за номером ${values.phone}.`);
+                clearCart();
+                resetForm();
+              } catch (error) {
+                alert('Замовлення оформлено, але не вдалося відправити в Telegram. Ми зв’яжемося з вами.');
+              }
+            }}
+          >
+            {({ setFieldValue, values }) => (
+              <Form className="flex flex-col gap-4 max-w-md">
+                <h2 className="text-2xl font-semibold mb-4">Ваше замовлення</h2>
+                <ul className="mb-6">
+                  {cart.map((item: CartItem, index: number) => (
+                    <li key={index} className="flex justify-between py-2 border-b">
+                      <span>
+                        {item.tire.brand} {item.tire.model} ({item.tire.size}) x{item.quantity}
+                      </span>
+                      <span>
+                        {item.tire.price
+                          ? `${(item.tire.price * item.quantity).toLocaleString()} грн`
+                          : 'Ціна за запитом'}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-lg font-semibold mb-6">
+                  Загальна сума: {hasPriceOnRequest ? `${totalPrice.toLocaleString()} грн (деякі товари за запитом)` : `${totalPrice.toLocaleString()} грн`}
                 </p>
-              )}
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  name="postalDelivery"
-                  checked={formData.postalDelivery}
-                  onChange={handleInputChange}
-                  className="h-5 w-5"
-                />
-                <span className="text-gray-600">Доставка Новою Поштою</span>
-              </label>
-              {formData.postalDelivery && (
-                <div className="flex flex-col gap-4">
-                  <input
-                    type="text"
-                    name="postalCity"
-                    value={formData.postalCity}
-                    onChange={handleInputChange}
-                    placeholder="Місто"
-                    className="modern-input"
-                    required
+                <h2 className="text-2xl font-semibold mb-4">Дані для замовлення</h2>
+                <div>
+                  <Field
+                    name="name"
+                    placeholder="Введіть ваше ім’я"
+                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white w-full placeholder-gray-400 modern-input"
                   />
-                  <input
-                    type="text"
-                    name="postalBranch"
-                    value={formData.postalBranch}
-                    onChange={handleInputChange}
-                    placeholder="Номер відділення Нової Пошти"
-                    className="modern-input"
-                    required
-                  />
-                  <input
-                    type="text"
-                    name="postalAddress"
-                    value={formData.postalAddress}
-                    onChange={handleInputChange}
-                    placeholder="Адреса для кур’єрської доставки (необов’язково)"
-                    className="modern-input"
-                  />
+                  <ErrorMessage name="name" component="p" className="text-red-500 text-sm mt-1" />
                 </div>
-              )}
-              <button
-                type="submit"
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200"
-              >
-                Підтвердити замовлення
-              </button>
-            </form>
-          </>
+                <div>
+                  <Field
+                    name="phone"
+                    type="tel"
+                    placeholder="+380"
+                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white w-full placeholder-gray-400 modern-input"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      let value = e.target.value;
+                      if (!value.startsWith('+380')) {
+                        value = '+380' + value.replace(/^\+380/, '');
+                      }
+                      setFieldValue('phone', value);
+                    }}
+                  />
+                  <ErrorMessage name="phone" component="p" className="text-red-500 text-sm mt-1" />
+                </div>
+                <label className="flex items-center gap-2">
+                  <Field
+                    type="checkbox"
+                    name="bookTireChange"
+                    className="h-5 w-5"
+                  />
+                  <span className="text-gray-600">Записатись на перевзування</span>
+                </label>
+                {values.bookTireChange && (
+                  <p className="text-sm text-gray-500">
+                    Ми зателефонуємо вам і оберемо для вас найкращий варіант.
+                  </p>
+                )}
+                <label className="flex items-center gap-2">
+                  <Field
+                    type="checkbox"
+                    name="postalDelivery"
+                    className="h-5 w-5"
+                  />
+                  <span className="text-gray-600">Доставка Новою Поштою</span>
+                </label>
+                {values.postalDelivery && (
+                  <div className="flex flex-col gap-4">
+                    <div>
+                      <Field
+                        name="postalCity"
+                        placeholder="Місто"
+                        className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white w-full placeholder-gray-400 modern-input"
+                      />
+                      <ErrorMessage name="postalCity" component="p" className="text-red-500 text-sm mt-1" />
+                    </div>
+                    <div>
+                      <Field
+                        name="postalBranch"
+                        placeholder="Номер відділення Нової Пошти"
+                        className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white w-full placeholder-gray-400 modern-input"
+                      />
+                      <ErrorMessage name="postalBranch" component="p" className="text-red-500 text-sm mt-1" />
+                    </div>
+                    <div>
+                      <Field
+                        name="postalAddress"
+                        placeholder="Адреса для кур’єрської доставки (необов’язково)"
+                        className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white w-full placeholder-gray-400 modern-input"
+                      />
+                      <ErrorMessage name="postalAddress" component="p" className="text-red-500 text-sm mt-1" />
+                    </div>
+                  </div>
+                )}
+                <button
+                  type="submit"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200"
+                >
+                  Підтвердити замовлення
+                </button>
+              </Form>
+            )}
+          </Formik>
         )}
       </div>
     </>
