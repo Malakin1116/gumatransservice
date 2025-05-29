@@ -75,7 +75,7 @@ export default function About() {
 
         {/* Швидкі посилання */}
         <div className="text-center">
-          <p className="text-lg mb-4">Дізнайтесь більше про наші послуги або перегляньте каталог!</p>
+          <p className="text-lg mb-4">Дізнайтесь більше про наші послуги або перегляньте каталог</p>
           <div className="flex justify-center gap-4">
             <Link href="/catalog" className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700">
               Каталог шин
