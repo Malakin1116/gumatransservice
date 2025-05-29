@@ -2,10 +2,62 @@
 
 import Link from 'next/link';
 import tiresData from '../../data/tires.json';
+import disksData from '../../data/disks.json';
 import TirePlaceholderSVG from '../app/components/TirePlaceholderSVG';
+import DiskPlaceholderSVG from '../app/components/DiskPlaceholderSVG';
+
+interface Tire {
+  size: string;
+  brand: string;
+  model: string;
+  axle: string;
+  price: number | null;
+  country: string;
+}
+
+interface Disk {
+  size: string;
+  brand: string;
+  price: number | null;
+  country: string;
+}
+
+interface PopularItem {
+  size: string;
+  brand: string;
+  price: number;
+  country: string;
+  isDisk: boolean;
+  model?: string;
+  axle?: string;
+}
 
 export default function Home() {
-  const popularTires = tiresData.slice(0, 3); // Показуємо 3 шини
+  // Фільтруємо товари з price !== null і вибираємо 2 шини та 1 диск
+  const popularItems: PopularItem[] = [
+    ...tiresData
+      .filter((item: Tire): item is Tire & { price: number } => item.price !== null)
+      .slice(0, 2)
+      .map((item: Tire & { price: number }) => ({
+        size: item.size,
+        brand: item.brand,
+        price: item.price,
+        country: item.country,
+        isDisk: false,
+        model: item.model,
+        axle: item.axle,
+      })),
+    ...disksData
+      .filter((item: Disk): item is Disk & { price: number } => item.price !== null)
+      .slice(0, 1)
+      .map((item: Disk & { price: number }) => ({
+        size: item.size,
+        brand: item.brand,
+        price: item.price,
+        country: item.country,
+        isDisk: true,
+      })),
+  ];
 
   return (
     <div className="bg-gray-50">
@@ -49,7 +101,7 @@ export default function Home() {
           </p>
           <div className="flex justify-center gap-4">
             <Link
-              href="/catalog"
+              href="/catalog/tires"
               className="bg-white text-blue-900 px-8 py-3 rounded-full font-semibold hover:bg-blue-100 transition-transform transform hover:scale-110 hover:shadow-2xl animate-bounce-in"
             >
               Каталог шин
@@ -65,33 +117,42 @@ export default function Home() {
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50 to-transparent" />
       </section>
 
-      {/* Секція популярних шин */}
+      {/* Секція популярних товарів */}
       <section className="max-w-7xl mx-auto px-4 py-12">
-        <h2 className="text-3xl font-bold text-center mb-8">Наші бестселери</h2>
+        <h2 className="text-3xl font-bold text-center mb-8 text-gray-900">Наші бестселери</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {popularTires.map((tire, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-lg shadow-lg p-6 text-center transform transition-transform duration-500 hover:scale-105 animate-slide-in"
-              style={{ animationDelay: `${index * 200}ms` }}
-            >
-              <TirePlaceholderSVG className="w-24 h-24 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">
-                {tire.brand} {tire.model}
-              </h3>
-              <p className="text-gray-600 mb-2">Розмір: {tire.size}</p>
-              <p className="text-gray-600 mb-2">Тип: {tire.type || 'Шина'}</p>
-              <p className="text-blue-600 font-bold mb-4">
-                {tire.price ? `${tire.price.toLocaleString()} грн` : 'Дізнайтесь у адміністрації'}
-              </p>
-              <Link
-                href="/catalog"
-                className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors"
-              >
-                Детальніше
-              </Link>
+          {popularItems.length === 0 ? (
+            <div className="col-span-full text-center py-12">
+              <h3 className="text-xl font-semibold text-gray-700 mb-2">На жаль, бестселери тимчасово недоступні</h3>
+              <p className="text-gray-500 text-sm">Перегляньте наш каталог для інших пропозицій!</p>
             </div>
-          ))}
+          ) : (
+            popularItems.map((item, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-lg shadow-lg p-6 text-center transform transition-transform duration-500 hover:scale-105 animate-slide-in"
+                style={{ animationDelay: `${index * 200}ms` }}
+              >
+                {item.isDisk ? (
+                  <DiskPlaceholderSVG className="w-24 h-24 mx-auto mb-4" />
+                ) : (
+                  <TirePlaceholderSVG className="w-24 h-24 mx-auto mb-4" />
+                )}
+                <h3 className="text-xl font-semibold mb-2 text-gray-900">
+                  {item.brand} {!item.isDisk && item.model ? item.model : ''}
+                </h3>
+                <p className="text-gray-600 mb-2">Розмір: {item.size}</p>
+                <p className="text-gray-600 mb-2">Тип: {item.isDisk ? 'Диск' : 'Шина'}</p>
+                <p className="text-blue-600 font-bold mb-4">{item.price.toLocaleString()} грн</p>
+                <Link
+                  href={item.isDisk ? '/catalog/disks' : '/catalog/tires'}
+                  className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors"
+                >
+                  Детальніше
+                </Link>
+              </div>
+            ))
+          )}
         </div>
       </section>
 
@@ -102,10 +163,10 @@ export default function Home() {
           <p className="text-lg mb-6">Перегляньте наш каталог або запишіться прямо зараз!</p>
           <div className="flex justify-center gap-4">
             <Link
-              href="/catalog"
+              href="/catalog/tires"
               className="bg-white text-blue-900 px-8 py-3 rounded-full font-semibold hover:bg-blue-100 transition-transform transform hover:scale-110 hover:shadow-2xl"
             >
-              Каталог
+              Каталог шин
             </Link>
             <Link
               href="/services"

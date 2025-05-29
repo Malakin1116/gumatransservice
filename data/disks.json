@@ -1,0 +1,38 @@
+[
+    {
+      "size": "22.5*11.75/0",
+      "brand": "DK",
+      "price": 4750,
+      "country": "Китай"
+    },
+    {
+      "size": "22.5*11.75/120",
+      "brand": "DK",
+      "price": 4900,
+      "country": "Китай"
+    },
+    {
+      "size": "22,5х9.00",
+      "brand": "DK",
+      "price": null,
+      "country": "Китай"
+    },
+    {
+      "size": "22.5*11.75/135",
+      "brand": "LEMMERZ",
+      "price": 7500,
+      "country": "Німеччина"
+    },
+    {
+      "size": "22.5*11.75/120",
+      "brand": "LEMMERZ",
+      "price": null,
+      "country": "Німеччина"
+    },
+    {
+      "size": "22,5х9.00",
+      "brand": "LEMMERZ",
+      "price": 7000,
+      "country": "Німеччина"
+    }
+  ]
