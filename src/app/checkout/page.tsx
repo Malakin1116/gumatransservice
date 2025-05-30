@@ -6,6 +6,8 @@ import { useCart } from '../context/CartContext';
 import * as Yup from 'yup';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 
+export const dynamic = 'force-dynamic';
+
 interface Tire {
   size: string;
   brand: string;
@@ -32,22 +34,44 @@ interface FormValues {
 }
 
 export default function Checkout() {
-  const { cart, clearCart } = useCart();
+  const [isMounted, setIsMounted] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
   const [hasPriceOnRequest, setHasPriceOnRequest] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const { cart, clearCart } = useCart();
 
   useEffect(() => {
-    setIsMounted(true);
-    const hasPriceNull = cart.some((item: CartItem) => item.tire.price === null);
-    setHasPriceOnRequest(hasPriceNull);
+    try {
+      console.log('Checkout useEffect: Mounting');
+      setIsMounted(true);
+    } catch (error) {
+      console.error('Checkout useEffect error:', error);
+    }
+  }, []);
 
-    const total = cart.reduce(
-      (sum: number, item: CartItem) => sum + (item.tire.price || 0) * item.quantity,
-      0
-    );
-    setTotalPrice(total);
+  useEffect(() => {
+    try {
+      console.log('Checkout useEffect: Cart update', cart);
+      if (cart && Array.isArray(cart)) {
+        const hasPriceNull = cart.some((item: CartItem) => item.tire.price === null);
+        setHasPriceOnRequest(hasPriceNull);
+
+        const total = cart.reduce(
+          (sum: number, item: CartItem) => sum + (item.tire.price || 0) * item.quantity,
+          0
+        );
+        setTotalPrice(total);
+      }
+    } catch (error) {
+      console.error('Checkout cart update error:', error);
+    }
   }, [cart]);
+
+  if (!isMounted) {
+    console.log('Checkout: Rendering loading state');
+    return <div>Завантаження...</div>;
+  }
+
+  console.log('Checkout: Rendering with cart:', cart);
 
   const validationSchema = Yup.object({
     name: Yup.string().required("Ім'я обов'язкове"),
@@ -55,12 +79,12 @@ export default function Checkout() {
       .matches(/^\+380[0-9]{9}$/, 'Номер телефону має бути у форматі +380XXXXXXXXX')
       .required("Номер телефону обов'язковий"),
     postalCity: Yup.string().when('postalDelivery', {
-      is: (postalDelivery: boolean) => postalDelivery,
+      is: true,
       then: (schema) => schema.required('Місто обов’язкове'),
       otherwise: (schema) => schema.optional(),
     }),
     postalBranch: Yup.string().when('postalDelivery', {
-      is: (postalDelivery: boolean) => postalDelivery,
+      is: true,
       then: (schema) => schema.required('Номер відділення обов’язковий'),
       otherwise: (schema) => schema.optional(),
     }),
@@ -68,14 +92,15 @@ export default function Checkout() {
   });
 
   const sendOrderToTelegram = async (values: FormValues) => {
-    const botToken = process.env.TELEGRAM_BOT_TOKEN;
-    const chatId = process.env.TELEGRAM_CHAT_ID;
+    try {
+      const botToken = process.env.TELEGRAM_BOT_TOKEN;
+      const chatId = process.env.TELEGRAM_CHAT_ID;
 
-    if (!botToken || !chatId) {
-      throw new Error('Налаштування Telegram некоректні');
-    }
+      if (!botToken || !chatId) {
+        throw new Error('Налаштування Telegram некоректні');
+      }
 
-    const message = `
+      const message = `
 Нове замовлення:
 Ім'я: ${values.name}
 Телефон: ${values.phone}
@@ -88,23 +113,23 @@ ${values.postalDelivery ? `Доставка поштою: Так
 ${cart.map((item: CartItem) => `- ${item.tire.brand} ${item.tire.model} (${item.tire.size}) x${item.quantity} - ${item.tire.price ? `${(item.tire.price * item.quantity).toLocaleString()} грн` : 'Ціна за запитом'}`).join('\n')}
 Загальна сума: ${hasPriceOnRequest ? `${totalPrice.toLocaleString()} грн (деякі товари за запитом)` : `${totalPrice.toLocaleString()} грн`}
 Час замовлення: ${new Date().toLocaleString()}
-    `;
+      `;
 
-    const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId, text: message }),
-    });
+      const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: chatId, text: message }),
+      });
 
-    const data = await response.json();
-    if (!data.ok) {
-      throw new Error(`Помилка відправки в Telegram: ${data.description}`);
+      const data = await response.json();
+      if (!data.ok) {
+        throw new Error(`Помилка відправки в Telegram: ${data.description}`);
+      }
+    } catch (error) {
+      console.error('Checkout sendOrderToTelegram error:', error);
+      throw error;
     }
   };
-
-  if (!isMounted) {
-    return null;
-  }
 
   return (
     <>
@@ -126,15 +151,10 @@ ${cart.map((item: CartItem) => `- ${item.tire.brand} ${item.tire.model} (${item.
           ],
           site_name: 'ГУМАТРАНССЕРВІС',
         }}
-        twitter={{
-          handle: '@yourhandle',
-          site: '@yourhandle',
-          cardType: 'summary_large_image',
-        }}
       />
       <div className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Оформлення замовлення</h1>
-        {cart.length === 0 ? (
+        {cart && Array.isArray(cart) && cart.length === 0 ? (
           <div className="empty-cart">
             <p className="text-lg text-gray-600">Ваш кошик порожній.</p>
           </div>
@@ -151,16 +171,18 @@ ${cart.map((item: CartItem) => `- ${item.tire.brand} ${item.tire.model} (${item.
             }}
             validationSchema={validationSchema}
             onSubmit={async (values: FormValues, { resetForm }) => {
-              if (cart.length === 0) {
-                alert('Ваш кошик порожній.');
-                return;
-              }
               try {
+                console.log('Checkout: Submitting form', values);
+                if (!cart || cart.length === 0) {
+                  alert('Ваш кошик порожній.');
+                  return;
+                }
                 await sendOrderToTelegram(values);
                 alert(`Дякуємо за замовлення, ${values.name}! Ми зв’яжемося з вами за номером ${values.phone}.`);
                 clearCart();
                 resetForm();
               } catch (error) {
+                console.error('Checkout form submission error:', error);
                 alert('Замовлення оформлено, але не вдалося відправити в Telegram. Ми зв’яжемося з вами.');
               }
             }}
@@ -169,7 +191,7 @@ ${cart.map((item: CartItem) => `- ${item.tire.brand} ${item.tire.model} (${item.
               <Form className="flex flex-col gap-4 max-w-md">
                 <h2 className="text-2xl font-semibold mb-4">Ваше замовлення</h2>
                 <ul className="mb-6">
-                  {cart.map((item: CartItem, index: number) => (
+                  {cart && Array.isArray(cart) && cart.map((item: CartItem, index: number) => (
                     <li key={index} className="flex justify-between py-2 border-b">
                       <span>
                         {item.tire.brand} {item.tire.model} ({item.tire.size}) x{item.quantity}
@@ -201,11 +223,15 @@ ${cart.map((item: CartItem) => `- ${item.tire.brand} ${item.tire.model} (${item.
                     placeholder="+380"
                     className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white w-full placeholder-gray-400 modern-input"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      let value = e.target.value;
-                      if (!value.startsWith('+380')) {
-                        value = '+380' + value.replace(/^\+380/, '');
+                      try {
+                        let value = e.target.value;
+                        if (!value.startsWith('+380')) {
+                          value = '+380' + value.replace(/^\+380/, '');
+                        }
+                        setFieldValue('phone', value);
+                      } catch (error) {
+                        console.error('Checkout phone input error:', error);
                       }
-                      setFieldValue('phone', value);
                     }}
                   />
                   <ErrorMessage name="phone" component="p" className="text-red-500 text-sm mt-1" />

@@ -35,15 +35,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setIsMounted(true);
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
+    if (typeof window !== 'undefined') {
+      try {
+        const savedCart = localStorage.getItem('cart');
+        if (savedCart) {
+          setCart(JSON.parse(savedCart));
+        }
+      } catch (error) {
+        console.error('Помилка при завантаженні кошика:', error);
+        setCart([]);
+      }
     }
   }, []);
 
   useEffect(() => {
-    if (isMounted) {
-      localStorage.setItem('cart', JSON.stringify(cart));
+    if (isMounted && typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('cart', JSON.stringify(cart));
+      } catch (error) {
+        console.error('Помилка при збереженні кошика:', error);
+      }
     }
   }, [cart, isMounted]);
 
@@ -83,7 +94,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clearCart = () => {
     setCart([]);
-    localStorage.removeItem('cart');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('cart');
+    }
   };
 
   const totalCartPrice = cart.reduce(
@@ -92,10 +105,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   );
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-  if (!isMounted) {
-    return <>{children}</>;
-  }
 
   return (
     <CartContext.Provider

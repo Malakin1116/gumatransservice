@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Formik, Form, Field } from 'formik';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic'; // Додано
+
 export default function Contacts() {
   const [submitted, setSubmitted] = useState(false);
   const boryspilMapLink = "https://maps.app.goo.gl/pSPjEEWP8pi4Y4jZA";
@@ -65,7 +67,6 @@ Email: ${values.email}
         Зв’яжіться з нами – ми завжди на зв’язку!
       </h2>
 
-      {/* Контактна інформація */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
         <div className="bg-white rounded-xl shadow-xl p-8 transform hover:scale-105 transition-transform duration-300 animate-slide-in">
           <h3 className="text-2xl font-bold mb-6 text-blue-600 flex items-center">
@@ -158,7 +159,6 @@ Email: ${values.email}
         </div>
       </div>
 
-      {/* Форма зворотного зв’язку */}
       <h3 className="text-3xl font-bold mb-8 text-center text-blue-900 animate-fade-in">
         Напишіть нам – ми відповімо миттєво! 📬
       </h3>
@@ -220,7 +220,6 @@ Email: ${values.email}
         )}
       </div>
 
-      {/* Швидкі посилання */}
       <div className="text-center animate-fade-in delay-300">
         <p className="text-xl font-semibold mb-6 text-gray-800">
           Готові знайти ідеальні шини чи записатися на шиномонтаж? 🚛

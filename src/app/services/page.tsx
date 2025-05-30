@@ -5,6 +5,8 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import Link from 'next/link';
 import * as Yup from 'yup';
 
+export const dynamic = 'force-dynamic'; // Додано
+
 interface FormValues {
   name: string;
   phone: string;
@@ -103,7 +105,6 @@ export default function Services() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Банер */}
       <section className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-2xl py-12 mb-12 overflow-hidden animate-fade-in">
         <div className="absolute inset-0 opacity-20">
           <svg className="w-full h-full" fill="none" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -129,7 +130,6 @@ export default function Services() {
         </div>
       </section>
 
-      {/* Картки послуг */}
       <h3 className="text-3xl font-bold text-center mb-8 text-blue-900 animate-fade-in">
         Наші послуги
       </h3>
@@ -148,7 +148,6 @@ export default function Services() {
         ))}
       </div>
 
-      {/* Таблиця цін */}
       <h3 className="text-3xl font-bold mb-8 text-center text-blue-900 animate-fade-in">
         Прайс-лист
       </h3>
@@ -171,7 +170,6 @@ export default function Services() {
         </table>
       </div>
 
-      {/* Форма запису */}
       <h3 className="text-3xl font-bold mb-8 text-center text-blue-900 animate-fade-in">
         Запис на шиномонтаж
       </h3>
@@ -273,7 +271,6 @@ export default function Services() {
         )}
       </div>
 
-      {/* CTA */}
       <div className="text-center mt-12 animate-fade-in delay-300">
         <Link
           href="/catalog"
