@@ -23,16 +23,16 @@ export default function MobileNav() {
       <nav className={`nav-menu-mobile ${isOpen ? 'block' : 'hidden'} md:hidden absolute top-16 left-0 w-full bg-blue-800 text-white z-10`}>
         <div className="flex flex-col space-y-2 p-4">
           <Link href="/" className="nav-menu-item hover:bg-blue-700 p-2 rounded" onClick={toggleMenu}>
-            Главная
+            Головна
           </Link>
           <Link href="/catalog" className="nav-menu-item hover:bg-blue-700 p-2 rounded" onClick={toggleMenu}>
             Каталог
           </Link>
           <Link href="/services" className="nav-menu-item hover:bg-blue-700 p-2 rounded" onClick={toggleMenu}>
-            Услуги
+            Послуги
           </Link>
           <Link href="/contacts" className="nav-menu-item hover:bg-blue-700 p-2 rounded" onClick={toggleMenu}>
-            Контакты
+            Контакти
           </Link>
         </div>
       </nav>
