@@ -5,6 +5,8 @@ import { useCart } from '../context/CartContext';
 import Link from 'next/link';
 import TirePlaceholderSVG from '../components/TirePlaceholderSVG';
 
+export const dynamic = 'force-dynamic';
+
 interface Tire {
   size: string;
   brand: string;
@@ -22,12 +24,30 @@ interface CartItem {
 
 export default function Cart() {
   const [isMounted, setIsMounted] = useState(false);
+  const { cart, removeFromCart, updateQuantity, totalCartPrice } = useCart();
 
   useEffect(() => {
-    setIsMounted(true);
+    try {
+      console.log('Cart useEffect: Mounting');
+      setIsMounted(true);
+    } catch (error) {
+      console.error('Cart useEffect error:', error);
+    }
   }, []);
 
+  const handleQuantityChange = (index: number, value: string) => {
+    try {
+      const newQuantity = parseInt(value);
+      if (!isNaN(newQuantity) && newQuantity > 0) {
+        updateQuantity(index, newQuantity);
+      }
+    } catch (error) {
+      console.error('Cart quantity change error:', error);
+    }
+  };
+
   if (!isMounted) {
+    console.log('Cart: Rendering loading state');
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Кошик</h1>
@@ -38,14 +58,7 @@ export default function Cart() {
     );
   }
 
-  const { cart, removeFromCart, updateQuantity, totalCartPrice } = useCart();
-
-  const handleQuantityChange = (index: number, value: string) => {
-    const newQuantity = parseInt(value);
-    if (!isNaN(newQuantity) && newQuantity > 0) {
-      updateQuantity(index, newQuantity);
-    }
-  };
+  console.log('Cart: Rendering with cart:', cart);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">

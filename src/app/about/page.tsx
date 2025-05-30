@@ -1,7 +1,7 @@
-'use client';
-
 import { NextSeo } from 'next-seo';
 import Link from 'next/link';
+
+export const dynamic = 'force-dynamic'; // Додано
 
 export default function About() {
   return (
@@ -39,7 +39,6 @@ export default function About() {
           Наша місія – забезпечити безпеку та комфорт на дорогах, пропонуючи шини, які відповідають найвищим стандартам якості. Ми пропонуємо широкий асортимент, конкурентні ціни та швидку доставку по всій Україні.
         </p>
 
-        {/* Контактна інформація та карта */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           <div className="bg-white rounded-lg shadow-lg p-6">
             <h2 className="text-2xl font-semibold mb-4">Наші контакти</h2>
@@ -73,7 +72,6 @@ export default function About() {
           </div>
         </div>
 
-        {/* Швидкі посилання */}
         <div className="text-center">
           <p className="text-lg mb-4">Дізнайтесь більше про наші послуги або перегляньте каталог</p>
           <div className="flex justify-center gap-4">

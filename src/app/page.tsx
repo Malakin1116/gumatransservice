@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 import tiresData from '../../data/tires.json';
 import disksData from '../../data/disks.json';
@@ -33,7 +31,6 @@ interface PopularItem {
 }
 
 export default function Home() {
-  // Фільтруємо товари з price !== null і вибираємо 2 шини та 1 диск
   const popularItems: PopularItem[] = [
     ...tiresData
       .filter((item: Tire): item is Tire & { price: number } => item.price !== null)
@@ -61,7 +58,6 @@ export default function Home() {
 
   return (
     <div className="bg-gray-50">
-      {/* Герой-секція з SVG */}
       <section className="relative py-24 text-white overflow-hidden">
         <svg
           className="absolute inset-0 w-full h-full"
@@ -117,7 +113,6 @@ export default function Home() {
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50 to-transparent" />
       </section>
 
-      {/* Секція популярних товарів */}
       <section className="max-w-7xl mx-auto px-4 py-12">
         <h2 className="text-3xl font-bold text-center mb-8 text-gray-900">Наші бестселери</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -156,21 +151,20 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA-секція */}
       <section className="bg-blue-900 text-white py-12 text-center">
         <div className="max-w-7xl mx-auto px-4">
           <h3 className="text-2xl font-bold mb-4">Потрібні шини чи шиномонтаж?</h3>
-          <p className="text-lg mb-6">Перегляньте наш каталог або запишіться прямо зараз!</p>
+          <p className="text-lg mb-6">Перегляньте наш каталог</p>
           <div className="flex justify-center gap-4">
             <Link
               href="/catalog/tires"
-              className="bg-white text-blue-900 px-8 py-3 rounded-full font-semibold hover:bg-blue-100 transition-transform transform hover:scale-110 hover:shadow-2xl"
+              className="bg-white text-blue-900 px-8 py-3 rounded-lg font-semibold hover:bg-blue-100 transition-colors duration-300"
             >
               Каталог шин
             </Link>
             <Link
               href="/services"
-              className="bg-blue-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-blue-700 transition-transform transform hover:scale-110 hover:shadow-2xl"
+              className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-300"
             >
               Запис на шиномонтаж
             </Link>

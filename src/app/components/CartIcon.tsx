@@ -6,11 +6,13 @@ import { useState, useEffect } from 'react';
 
 export default function CartIcon() {
   const [isMounted, setIsMounted] = useState(false);
+  const { totalItems } = useCart(); // Переміщено на верхній рівень
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  // Показуємо заглушку, якщо не змонтовано
   if (!isMounted) {
     return (
       <Link href="/cart" className="cart-icon relative flex items-center">
@@ -23,8 +25,6 @@ export default function CartIcon() {
       </Link>
     );
   }
-
-  const { totalItems } = useCart();
 
   return (
     <Link href="/cart" className="cart-icon relative flex items-center">
